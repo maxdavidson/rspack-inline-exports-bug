@@ -1,19 +1,20 @@
-# rspack-repro
+# rspack-inline-exports-bug
 
-- [Rspack website](https://rspack.dev/)
-- [Rspack repo](https://github.com/web-infra-dev/rspack)
+This repo demonstrates a bug in Rspack's inline exports features, where the injected comment sometimes result in syntax errors:
 
-A GitHub template for creating a Rspack minimal reproducible example.
+```javascript
+// Before:
+if (minutes/minutesInDay) {}
 
-webpack is included for comparing the outputs.
+// After: syntax error! (two forward slashes turns into a single-line comment)
+if (minutes//* inlined export .minutesInDay */ (1440)) {}
+
+// Potential fixes:
+if (minutes/ /* inlined export .minutesInDay */ (1440)) {}
+if (minutes/(/* inlined export .minutesInDay */ (1440))) {}
+if (minutes/(/* inlined export .minutesInDay */ 1440)) {}
+```
 
 ## Usages
 
-`pnpm run build` would both run Rspack and webpack with config `./rspack.config.mjs`
-
-- Rspack will emits output in `./rspack-dist`
-- webpack will emits output in `./webpack-dist`
-
-`./webpack-dist` and `./rspack-dist` are purposely not added to `.gitignore`.
-
-It is recommended to commit these files so we quickly compare the outputs.
+`node --run build` runs Rspack build
